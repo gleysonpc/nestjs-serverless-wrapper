@@ -1,0 +1,24 @@
+service: serverless-example
+
+plugins:
+  - serverless-offline
+
+custom:
+  secrets: ${file(./secrets.yml):${self:provider.stage}}
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: ${opt:stage, 'develop'}
+  lambdaHashingVersion: 20201221
+  environment:
+    API_KEY_EXAMPLE: ${self:custom.secrets.API_KEY_EXAMPLE}
+
+functions:
+  main:
+    handler: dist/serverless.handler
+    events:
+      - http:
+          method: any
+          path: /{any+}
+          cors: true
